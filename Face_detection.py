@@ -2,7 +2,7 @@
 
 
 import cv2
-
+import dlib
 # Method to draw boundary around the detected feature
 def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, text):
     # Converting image to gray-scale
@@ -10,13 +10,24 @@ def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, text):
     
     # detecting features in gray-scale image, returns coordinates, width and height of features
     features = classifier.detectMultiScale(gray_img, scaleFactor, minNeighbors)
+    detector = dlib.get_frontal_face_detector();
+    predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
     coords = []
     
+    featur = detector(gray_img)
     # drawing rectangle around the feature and labeling it
+    if classifier=="faceCascade":
+        for f in featur:
+            landmark = predictor(gray_img, f)
+            for n in range(0, 68):
+                x = landmarks.part(n).x
+                y = landmarks.part(n).y
+                cv2.circle(img, (x, y), 4, (255, 0, 0), -1)
+
     for (x, y, w, h) in features:
-        cv2.rectangle(img, (x,y), (x+w, y+h), color, 2)
-        cv2.putText(img, text, (x, y-4), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 1, cv2.LINE_AA)
-        coords = [x, y, w, h]
+         cv2.rectangle(img, (x,y), (x+w, y+h), color, 2)
+         cv2.putText(img, text, (x, y-4), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 1, cv2.LINE_AA)
+         coords = [x, y, w, h]
     return coords
 
 
